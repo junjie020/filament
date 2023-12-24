@@ -54,7 +54,7 @@ struct App {
     GroundPlane plane;
 };
 
-static const char* MODEL_FILE = "assets/models/monkey/monkey.obj";
+static const char* MODEL_FILE = "assets/models/cube/cube.obj";
 static const char* IBL_FOLDER = "assets/ibl/lightroom_14b";
 
 static constexpr bool ENABLE_SHADOWS = true;
@@ -76,11 +76,14 @@ int main(int argc, char** argv) {
         auto& rcm = engine->getRenderableManager();
         auto& em = utils::EntityManager::get();
 
+        //FilamentApp::get().setCameraNearFar(1.f, 1000.f);
+
         // Add geometry into the scene.
         app.meshes = new MeshAssimp(*engine);
         app.meshes->addFromFile(FilamentApp::getRootAssetsPath() + MODEL_FILE, app.materials);
         auto ti = tcm.getInstance(app.meshes->getRenderables()[0]);
-        app.transform = mat4f{ mat3f(1), float3(0, 0, -4) } * tcm.getWorldTransform(ti);
+        app.transform = mat4f{ mat3f(1), float3(0, 2, 0) } * tcm.getWorldTransform(ti);
+        //app.transform = mat4f{ mat3f(1), float3(0, 0, -4) } * tcm.getWorldTransform(ti);
         for (auto renderable : app.meshes->getRenderables()) {
             auto instance = rcm.getInstance(renderable);
             if (rcm.hasComponent(renderable)) {
@@ -95,7 +98,7 @@ int main(int argc, char** argv) {
         LightManager::Builder(LightManager::Type::SUN)
             .color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
             .intensity(110000)
-            .direction({ 0.7, -1, -0.8 })
+            .direction({ 0.0, -1.0, 0.0 })
             .sunAngularRadius(1.9f)
             .castShadows(ENABLE_SHADOWS)
             .build(*engine, app.light);
@@ -142,10 +145,10 @@ static GroundPlane createGroundPlane(Engine* engine) {
         0, 1, 2, 2, 3, 0
     };
     const static float3 vertices[] {
-        { -10, 0, -10 },
-        { -10, 0,  10 },
-        {  10, 0,  10 },
-        {  10, 0, -10 },
+        { -50, 0, -50 },
+        { -50, 0,  50 },
+        {  50, 0,  50 },
+        {  50, 0, -50 },
     };
     short4 tbn = packSnorm16(normalize(positive(mat3f{
         float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}, float3{0.0f, 1.0f, 0.0f}
@@ -169,7 +172,7 @@ static GroundPlane createGroundPlane(Engine* engine) {
     auto& em = utils::EntityManager::get();
     utils::Entity renderable = em.create();
     RenderableManager::Builder(1)
-        .boundingBox({{ 0, 0, 0 }, { 10, 1e-4f, 10 }})
+        .boundingBox({{ 0, 0, 0 }, { 50, 1e-4f, 50 }})
         .material(0, shadowMaterial->getDefaultInstance())
         .geometry(0, RenderableManager::PrimitiveType::TRIANGLES, vertexBuffer, indexBuffer, 0, 6)
         .culling(false)
@@ -178,7 +181,8 @@ static GroundPlane createGroundPlane(Engine* engine) {
         .build(*engine, renderable);
 
     auto& tcm = engine->getTransformManager();
-    tcm.setTransform(tcm.getInstance(renderable), mat4f::translation(float3{ 0, -1, -4 }));
+    tcm.setTransform(tcm.getInstance(renderable), mat4f::translation(float3{ 0, 0, 0 }));
+    //tcm.setTransform(tcm.getInstance(renderable), mat4f::translation(float3{ 0, -1, -4 }));
     return {
         .vb = vertexBuffer,
         .ib = indexBuffer,

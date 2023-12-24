@@ -692,7 +692,8 @@ FilamentApp::Window::Window(FilamentApp* filamentApp,
 
     // set-up the camera manipulators
     mMainCameraMan = CameraManipulator::Builder()
-            .targetPosition(0, 0, -4)
+            .targetPosition(0, 0, 0)
+            .orbitHomePosition(0.0, 5.0, 5.0)
             .flightMoveDamping(15.0)
             .build(config.cameraMode);
     mDebugCameraMan = CameraManipulator::Builder()
@@ -719,7 +720,7 @@ FilamentApp::Window::Window(FilamentApp* filamentApp,
     // configure the cameras
     configureCamerasForWindow();
 
-    mMainCamera->lookAt({4, 0, -4}, {0, 0, -4}, {0, 1, 0});
+    mMainCamera->lookAt({0, 5, 5}, {0, 0, 0}, {0, 1, 0});
 }
 
 FilamentApp::Window::~Window() {
@@ -894,16 +895,18 @@ void FilamentApp::Window::configureCamerasForWindow() {
         projections[3] = projections[2];
         mMainCamera->setCustomEyeProjection(projections, 4, projections[0], near, far);
     } else {
-        mMainCamera->setLensProjection(mFilamentApp->mCameraFocalLength, 1.0, near, far);
+        //mMainCamera->setLensProjection(mFilamentApp->mCameraFocalLength, 1.0, near, far);
+        auto aspectRatio = double(mainWidth) / height;
+        mMainCamera->setProjection(60.0, aspectRatio, near, far, Camera::Fov::VERTICAL);
     }
     mDebugCamera->setProjection(45.0, double(width) / height, 0.0625, 4096, Camera::Fov::VERTICAL);
 
-    auto aspectRatio = double(mainWidth) / height;
-    if (mMainView->getView()->getStereoscopicOptions().enabled) {
-        const int ec = mConfig.stereoscopicEyeCount;
-        aspectRatio = double(mainWidth) / ec / height;
-    }
-    mMainCamera->setScaling({1.0 / aspectRatio, 1.0});
+    // auto aspectRatio = double(mainWidth) / height;
+    // if (mMainView->getView()->getStereoscopicOptions().enabled) {
+    //     const int ec = mConfig.stereoscopicEyeCount;
+    //     aspectRatio = double(mainWidth) / ec / height;
+    // }
+    // mMainCamera->setScaling({1.0 / aspectRatio, 1.0});
 
     // We're in split view when there are more views than just the Main and UI views.
     if (splitview) {
