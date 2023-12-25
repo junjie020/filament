@@ -76,13 +76,14 @@ int main(int argc, char** argv) {
         auto& rcm = engine->getRenderableManager();
         auto& em = utils::EntityManager::get();
 
-        //FilamentApp::get().setCameraNearFar(1.f, 1000.f);
+        FilamentApp::get().setCameraNearFar(0.1f, 1000.f);
 
         // Add geometry into the scene.
         app.meshes = new MeshAssimp(*engine);
         app.meshes->addFromFile(FilamentApp::getRootAssetsPath() + MODEL_FILE, app.materials);
         auto ti = tcm.getInstance(app.meshes->getRenderables()[0]);
         app.transform = mat4f{ mat3f(1), float3(0, 2, 0) } * tcm.getWorldTransform(ti);
+        tcm.setTransform(ti, app.transform);
         //app.transform = mat4f{ mat3f(1), float3(0, 0, -4) } * tcm.getWorldTransform(ti);
         for (auto renderable : app.meshes->getRenderables()) {
             auto instance = rcm.getInstance(renderable);
@@ -124,13 +125,13 @@ int main(int argc, char** argv) {
         delete app.meshes;
     };
 
-    FilamentApp::get().animate([&app](Engine* engine, View* view, double now) {
-        auto& tcm = engine->getTransformManager();
-        auto ti = tcm.getInstance(app.meshes->getRenderables()[0]);
-        tcm.setTransform(ti, app.transform * mat4f::rotation(now, float3{ 0, 1, 0 }));
-    });
+    // FilamentApp::get().animate([&app](Engine* engine, View* view, double now) {
+    //     auto& tcm = engine->getTransformManager();
+    //     auto ti = tcm.getInstance(app.meshes->getRenderables()[0]);
+    //     tcm.setTransform(ti, app.transform * mat4f::rotation(now, float3{ 0, 1, 0 }));
+    // });
 
-    FilamentApp::get().run(config, setup, cleanup);
+    FilamentApp::get().run(config, setup, cleanup, nullptr, nullptr, nullptr, 1280, 720);
 
     return 0;
 }
