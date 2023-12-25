@@ -146,10 +146,10 @@ static GroundPlane createGroundPlane(Engine* engine) {
         0, 1, 2, 2, 3, 0
     };
     const static float3 vertices[] {
-        { -50, 0, -50 },
-        { -50, 0,  50 },
-        {  50, 0,  50 },
-        {  50, 0, -50 },
+        { -25, 0, -25 },
+        { -25, 0,  25 },
+        {  25, 0,  25 },
+        {  25, 0, -25 },
     };
     short4 tbn = packSnorm16(normalize(positive(mat3f{
         float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}, float3{0.0f, 1.0f, 0.0f}
@@ -173,7 +173,7 @@ static GroundPlane createGroundPlane(Engine* engine) {
     auto& em = utils::EntityManager::get();
     utils::Entity renderable = em.create();
     RenderableManager::Builder(1)
-        .boundingBox({{ 0, 0, 0 }, { 50, 1e-4f, 50 }})
+        .boundingBox({{ 0, 0, 0 }, { 25, 1e-6f, 25 }})
         .material(0, shadowMaterial->getDefaultInstance())
         .geometry(0, RenderableManager::PrimitiveType::TRIANGLES, vertexBuffer, indexBuffer, 0, 6)
         .culling(false)
